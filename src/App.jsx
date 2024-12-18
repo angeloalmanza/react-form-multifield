@@ -1,12 +1,19 @@
 import { useState } from "react"
 
 function App() {
+  const initialDataForm = {
+    title: "",
+    description: "",
+    author: "",
+    image: "", 
+    category: "",
+    available: false
+  }
+
   const [posts, setPosts] = useState([]);
 
   // Variabile per l'input
-  const [postTitle, setPostTitle] = useState("");
-  const [postDescription, setPostDescription] = useState("");
-  const [postAuthor, setPostAuthor] = useState("");
+  const [formData, setFormData] = useState(initialDataForm)
 
   /**
    *funzione che aggiunge un nuovo post alla lista
@@ -17,10 +24,8 @@ function App() {
 
     // Creo l'oggetto del nuovo post
     const newPost = {
-      id: Date.now(),
-      title: postTitle,
-      description: postDescription,
-      author: postAuthor
+      ...formData,
+      id: Date.now()
     }
 
     // Creo la copia della lista, e aggiungo il nuovo Post
@@ -30,8 +35,7 @@ function App() {
     setPosts(newArray);
 
     // Ripulisco il campo del form
-    setPostTitle("");
-    setPostDescription("");
+    setFormData(initialDataForm)
   };
 
   /**
@@ -42,6 +46,23 @@ function App() {
     const newArray = posts.filter(curPost => curPost.id !== idDaCancellare)
     setPosts(newArray)
   };
+
+  const handleInputChange = (event) => {
+    const keyToChange = event.target.name;
+    let newValue;
+
+    if(event.target.type === "checkbox"){
+      newValue = event.target.checked;
+    }else{
+      newValue = event.target.value;
+    }
+
+    const newData = {
+      ...formData,
+      [keyToChange]: newValue,
+    }
+    setFormData(newData);
+  }
 
   return (
     <>
@@ -54,11 +75,17 @@ function App() {
             <div className="row row-cols-2 row-cols-lg-3">
               {posts.map((curPost) => (
                 <div className="col" key={curPost.id}>
-                  <div className="card">
+                  <div className="card mb-3">
+                    <img src={curPost.image || "https://via.placeholder.com/150"} className="card-img-top h-50"/>
                     <div className="card-body">
                       <h4>{curPost.title}</h4>
                       <p>{curPost.description}</p>
                       <h6>{curPost.author}</h6>
+                      <h6>{curPost.category}</h6>
+                      <p>
+                        Stato:{" "}
+                        {curPost.available ? "Pubblicato" : "Non Pubblicato"}
+                      </p>
                       <button onClick={() => {cancella(curPost.id)}} className="btn btn-danger"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                   </div>
@@ -80,8 +107,9 @@ function App() {
               type="text"
               className="form-control"
               id="postTitle"
-              value={postTitle}
-              onChange={(event) => setPostTitle(event.target.value)}
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
               />
             </div>
             <div className="mb-3">
@@ -90,8 +118,9 @@ function App() {
               type="text"
               className="form-control"
               id="postDescription"
-              value={postDescription}
-              onChange={(event) => setPostDescription(event.target.value)}
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
               />
             </div>
             <div className="mb-3">
@@ -100,8 +129,47 @@ function App() {
               type="text"
               className="form-control"
               id="postAuthor"
-              value={postAuthor}
-              onChange={(event) => setPostAuthor(event.target.value)}
+              name="author"
+              value={formData.author}
+              onChange={handleInputChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="postImage"> URL Immagine del Post (lascia vuoto per immagine di default)</label>
+              <input
+              type="text"
+              className="form-control"
+              id="postImage"
+              name="image"
+              value={formData.image}
+              onChange={handleInputChange}
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="postCategory">Categoria</label>
+              <select
+                className="form-control"
+                id="postCategory"
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+              >
+                <option value="Notizie">Notizie</option>
+                <option value="Tecnologia">Tecnologia</option>
+                <option value="Sport">Sport</option>
+                <option value="Intrattenimento">Intrattenimento</option>
+                <option value="Giardinaggio">Giardinaggio</option>
+              </select>
+            </div>
+            <div className="mb-3 form-check">
+              <label htmlFor="postAvailable">Pubblica subito</label>
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="postAvailable"
+                name="available"
+                checked={formData.available}
+                onChange={handleInputChange}
               />
             </div>
             <button type="submit" className="btn btn-primary">Aggiungi</button>
