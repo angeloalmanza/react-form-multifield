@@ -7,8 +7,11 @@ function App() {
     author: "",
     image: "", 
     category: "",
-    available: false
+    available: false,
+    tags: []
   }
+
+  const availableTags = ["Tech", "Lifestyle", "Sport", "Politica", "Arte"];
 
   const [posts, setPosts] = useState([]);
 
@@ -71,6 +74,15 @@ function App() {
     }
   }, [formData.available])
 
+  const handleTagChange = (tag) => {
+    const isSelected = formData.tags.includes(tag);
+    const updatedTags = isSelected
+      ? formData.tags.filter((curTag) => curTag !== tag) // Rimuove il tag se selezionato
+      : [...formData.tags, tag]; // Aggiunge il tag se non selezionato
+
+    setFormData({ ...formData, tags: updatedTags });
+  };
+
   return (
     <>
       <div className="container">
@@ -93,6 +105,7 @@ function App() {
                         Stato:{" "}
                         {curPost.available ? "Pubblicato" : "Non Pubblicato"}
                       </p>
+                      <p>Tags: {curPost.tags.join(", ") || "Nessun tag"}</p>
                       <button onClick={() => {cancella(curPost.id)}} className="btn btn-danger"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
                   </div>
@@ -175,9 +188,28 @@ function App() {
                 className="form-check-input"
                 id="postAvailable"
                 name="available"
-                checked={formData.available}
+                value={formData.available}
                 onChange={handleInputChange}
               />
+            </div>
+            <div className="mb-3">
+              <label>Tags</label>
+              <div>
+                {availableTags.map((tag) => (
+                  <div key={tag.id} className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={`tag-${tag}`}
+                      value={formData.tags.includes(tag)}
+                      onChange={() => handleTagChange(tag)}
+                    />
+                    <label className="form-check-label" htmlFor={`tag-${tag}`}>
+                      {tag}
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
             <button type="submit" className="btn btn-primary">Aggiungi</button>
           </form>
