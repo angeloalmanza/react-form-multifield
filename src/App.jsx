@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 function App() {
   const initialDataForm = {
@@ -63,6 +63,13 @@ function App() {
     }
     setFormData(newData);
   }
+
+  // Bonus
+  useEffect(() => {
+    if(formData.available){
+      alert("Il post verrà pubblicato");
+    }
+  }, [formData.available])
 
   return (
     <>
